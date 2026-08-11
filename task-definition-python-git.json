@@ -1,0 +1,30 @@
+{
+  "family": "cernova-rbv1-python",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::526426842645:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "cernova-rbv1",
+      "image": "python:3.12",
+      "portMappings": [{"containerPort": 8000}],
+      "environment": [
+        {"name": "DATABASE_URL", "value": "postgresql://postgres:CernovaRB2026!@cernova-rb-db.c61cukey2jxy.us-east-1.rds.amazonaws.com:5432/cernova_rb"}
+      ],
+      "command": [
+        "sh", "-c",
+        "apt-get update && apt-get install -y git && git clone https://github.com/SEU_USER/cernova-xml-livro-caixa.git /app && cd /app && pip install -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/cernova-rbv1",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

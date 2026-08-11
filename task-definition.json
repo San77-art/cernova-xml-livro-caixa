@@ -1,0 +1,35 @@
+{
+  "family": "cernova-rbv1",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::526426842645:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "cernova-rbv1",
+      "image": "526426842645.dkr.ecr.us-east-1.amazonaws.com/cernova-rbv1:latest",
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "DATABASE_URL",
+          "value": "postgresql://postgres:CernovaRB2026!@cernova-rb-db.c61cukey2jxy.us-east-1.rds.amazonaws.com:5432/cernova_rb"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/cernova-rbv1",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}
