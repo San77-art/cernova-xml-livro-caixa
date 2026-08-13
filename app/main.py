@@ -1,170 +1,108 @@
-﻿# ═══════════════════════════════════════════════════════════════════════════════
-# CERNOVA RBV1 v2.0 - DEPLOYMENT AUTOMÁTICO COM MÓDULO MEDICINA
-# ═══════════════════════════════════════════════════════════════════════════════
+﻿from fastapi import FastAPI, Header, Depends, UploadFile, File
+from sqlalchemy.orm import Session
+from sqlalchemy import text
+from uuid import UUID
+from datetime import datetime
+from app.database.session import get_db, engine
+from app.database.models import Base
+from app.modulos.ingestao.models import XmlIngestion
+from app.modulos.ingestao.service import IngestaoService
+from app.modulos.parser.models import XmlDocumento
+from app.modulos.parser.service import ParserService
+from app.modulos.classificacao.models import ClassificacaoCandidata
+from app.modulos.classificacao.service import ClassificacaoService
+from app.modulos.livro_caixa.models import LivroCaixa, PreContabilizacao
+from app.modulos.livro_caixa.service import LivroCaixaService
+from app.modulos.versionamento.models import CadeiaVersao, Outbox
+from app.modulos.versionamento.service import VersiorService
 
-Write-Host "
-╔═══════════════════════════════════════════════════════════════════════════════╗
-║                   CERNOVA RBV1 v2.0 - DEPLOYMENT AUTOMÁTICO                  ║
-║              Integração Módulo Medicina com XML + Livro Caixa                ║
-╚═══════════════════════════════════════════════════════════════════════════════╝
-" -ForegroundColor Cyan
+Base.metadata.create_all(bind=engine)
 
-# ───────────────────────────────────────────────────────────────────────────────
-# PASSO 1: Restaurar Ambiente
-# ───────────────────────────────────────────────────────────────────────────────
-
-Write-Host "`n[1/8] Restaurando ambiente..." -ForegroundColor Yellow
-cd C:\Users\User\cernova-xml-livro-caixa
-if (-not (Test-Path "venv\Scripts\activate")) {
-    Write-Host "❌ Ambiente virtual não encontrado!" -ForegroundColor Red
-    exit 1
-}
-
-& venv\Scripts\activate
-Write-Host "✅ Ambiente ativado" -ForegroundColor Green
-
-# ───────────────────────────────────────────────────────────────────────────────
-# PASSO 2: Copiar Arquivos
-# ───────────────────────────────────────────────────────────────────────────────
-
-Write-Host "`n[2/8] Copiando arquivos..." -ForegroundColor Yellow
-
-# Backup do main.py antigo
-Copy-Item app\main.py app\main.py.backup -Force
-Write-Host "   ✅ Backup de main.py criado"
-
-# Criar arquivo main.py completo com Medicina
-@'
-from fastapi import FastAPI, status
-from fastapi.responses import JSONResponse
-from contextlib import asynccontextmanager
-import logging
-
-# Database
-from app.database.session import Base, engine, get_db
-
-# Modulos
-from app.modulos.ingestao import routes as ingestao_routes
-from app.modulos.parser import routes as parser_routes
-from app.modulos.classificacao import routes as classificacao_routes
-from app.modulos.livro_caixa import routes as livro_caixa_routes
-from app.modulos.medicina import routes as medicina_routes
-
-# Config
-from app.config.emails import EmailService
-
-# Setup logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Gerencia o ciclo de vida da aplicação"""
-    # Startup
-    logger.info("🚀 Iniciando Cernova RBV1 v2.0...")
-    Base.metadata.create_all(bind=engine)
-    logger.info("✅ Database criado/validado")
-    yield
-    # Shutdown
-    logger.info("🔴 Encerrando Cernova RBV1...")
-
-app = FastAPI(
-    title="Cernova RBV1",
-    description="Motor Documental Transversal - XML, Livro Caixa, Medicina & Agro",
-    version="2.0.0",
-    lifespan=lifespan
-)
-
-# ============ HEALTH CHECK ============
-
-@app.get("/health", status_code=status.HTTP_200_OK)
-async def health_check():
-    """Health check com status do banco"""
-    try:
-        db = next(get_db())
-        db.execute("SELECT 1")
-        db.close()
-        return {
-            "status": "OK",
-            "database": "Connected",
-            "version": "2.0.0",
-            "modulos": ["xml", "livro_caixa", "medicina"]
-        }
-    except Exception as e:
-        logger.error(f"❌ Health check falhou: {e}")
-        return JSONResponse(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            content={"status": "ERROR", "database": "Disconnected"}
-        )
+app = FastAPI(title="Cernova XML + Livro Caixa + Medicina RBV1 v2.0")
 
 @app.get("/")
 async def root():
-    """Endpoint raiz"""
-    return {
-        "status": "Cernova RBV1 - Sistema rodando",
-        "versao": "2.0.0",
-        "modulos": ["ingestao", "parser", "classificacao", "livro_caixa", "medicina"],
-        "docs": "/docs",
-        "emails": {
-            "suporte": "suporte@cernova.com.br",
-            "admin": "admin@cernova.com.br",
-            "suporte_medicina": "suporte-medicina@cernova.com.br"
-        }
-    }
+    return {"status": "Cernova RBV1 v2.0 - Sistema rodando", "modulos": ["xml", "livro_caixa", "medicina"]}
 
-# ============ REGISTRAR ROUTERS ============
+@app.get("/health")
+async def health(db: Session = Depends(get_db)):
+    try:
+        db.execute(text("SELECT 1"))
+        return {"status": "OK", "database": "Connected", "version": "2.0.0"}
+    except:
+        return {"status": "ERROR", "database": "Disconnected"}
 
-app.include_router(ingestao_routes.router)
-app.include_router(parser_routes.router)
-app.include_router(classificacao_routes.router)
-app.include_router(livro_caixa_routes.router)
-app.include_router(medicina_routes.router)
+# ============ MEDICINA ENDPOINTS ============
 
-# ============ ERROR HANDLERS ============
+@app.post("/medicina/consultorios")
+async def criar_consultorio(nome: str, cnpj: str, db: Session = Depends(get_db)):
+    try:
+        from app.modulos.medicina.models import Consultorio
+        consultorio = Consultorio(nome=nome, cnpj=cnpj, empresa_id="default")
+        db.add(consultorio)
+        db.commit()
+        db.refresh(consultorio)
+        return {"id": str(consultorio.id), "nome": consultorio.nome, "status": "criado"}
+    except Exception as e:
+        return {"status": "erro", "mensagem": str(e)}
 
-@app.exception_handler(404)
-async def not_found_handler(request, exc):
-    return JSONResponse(
-        status_code=404,
-        content={"detail": "Endpoint não encontrado", "path": str(request.url)}
-    )
+@app.get("/medicina/consultorios")
+async def listar_consultorios(db: Session = Depends(get_db)):
+    try:
+        from app.modulos.medicina.models import Consultorio
+        consultorios = db.query(Consultorio).all()
+        return [{"id": str(c.id), "nome": c.nome, "cnpj": c.cnpj} for c in consultorios]
+    except Exception as e:
+        return {"status": "erro", "mensagem": str(e)}
 
-@app.exception_handler(500)
-async def server_error_handler(request, exc):
-    logger.error(f"❌ Erro no servidor: {exc}")
-    return JSONResponse(
-        status_code=500,
-        content={"detail": "Erro interno do servidor"}
-    )
+@app.post("/medicina/medicos")
+async def criar_medico(nome_completo: str, cpf: str, crm: str, especialidade: str, consultorio_id: str, db: Session = Depends(get_db)):
+    try:
+        from app.modulos.medicina.models import Medico
+        medico = Medico(nome_completo=nome_completo, cpf=cpf, crm=crm, especialidade=especialidade, consultorio_id=consultorio_id)
+        db.add(medico)
+        db.commit()
+        db.refresh(medico)
+        return {"id": str(medico.id), "nome": medico.nome_completo, "status": "criado"}
+    except Exception as e:
+        return {"status": "erro", "mensagem": str(e)}
 
-# ============ STARTUP EVENTS ============
+@app.get("/medicina/medicos")
+async def listar_medicos(consultorio_id: str = None, db: Session = Depends(get_db)):
+    try:
+        from app.modulos.medicina.models import Medico
+        query = db.query(Medico)
+        if consultorio_id:
+            query = query.filter(Medico.consultorio_id == consultorio_id)
+        medicos = query.all()
+        return [{"id": str(m.id), "nome": m.nome_completo, "crm": m.crm} for m in medicos]
+    except Exception as e:
+        return {"status": "erro", "mensagem": str(e)}
 
-@app.on_event("startup")
-async def startup_event():
-    """Executado ao iniciar"""
-    logger.info("✅ Cernova RBV1 v2.0 iniciado com sucesso!")
-    logger.info("📊 Endpoints disponíveis:")
-    logger.info("   - GET /health (Health Check)")
-    logger.info("   - GET / (Info)")
-    logger.info("   - POST /ingestao/xml (Upload XML)")
-    logger.info("   - GET /classificacoes (Classificações)")
-    logger.info("   - GET /livro-caixa (Livro Caixa)")
-    logger.info("   - POST /medicina/consultorios (Novo Consultório)")
-    logger.info("   - POST /medicina/medicos (Novo Médico)")
-    logger.info("   - POST /medicina/pacientes (Novo Paciente)")
-    logger.info("   - POST /medicina/consultas (Agendar Consulta)")
-    logger.info("   - GET /docs (Swagger UI)")
+@app.post("/medicina/pacientes")
+async def criar_paciente(nome_completo: str, cpf: str, data_nascimento: str, consultorio_id: str, db: Session = Depends(get_db)):
+    try:
+        from app.modulos.medicina.models import Paciente
+        paciente = Paciente(nome_completo=nome_completo, cpf=cpf, data_nascimento=datetime.fromisoformat(data_nascimento), consultorio_id=consultorio_id)
+        db.add(paciente)
+        db.commit()
+        db.refresh(paciente)
+        return {"id": str(paciente.id), "nome": paciente.nome_completo, "status": "criado"}
+    except Exception as e:
+        return {"status": "erro", "mensagem": str(e)}
 
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Executado ao desligar"""
-    logger.info("🔴 Cernova RBV1 encerrado")
+@app.get("/medicina/pacientes")
+async def listar_pacientes(consultorio_id: str = None, db: Session = Depends(get_db)):
+    try:
+        from app.modulos.medicina.models import Paciente
+        query = db.query(Paciente)
+        if consultorio_id:
+            query = query.filter(Paciente.consultorio_id == consultorio_id)
+        pacientes = query.all()
+        return [{"id": str(p.id), "nome": p.nome_completo, "cpf": p.cpf} for p in pacientes]
+    except Exception as e:
+        return {"status": "erro", "mensagem": str(e)}
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=8000,
-        log_level="info"
-    )
+    uvicorn.run(app, host="0.0.0.0", port=8000)
