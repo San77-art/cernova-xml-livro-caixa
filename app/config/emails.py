@@ -1,10 +1,9 @@
 ﻿from typing import List
-from pydantic import BaseModel
 
-class EmailConfig(BaseModel):
+class EmailConfig:
     """Configuração de emails da Cernova"""
-    SUPORTE_EMAIL = "suporte@cernova.com.br"
-    ADMIN_EMAIL = "admin@cernova.com.br"
+    SUPORTE_EMAIL: str = "suporte@cernova.com.br"
+    ADMIN_EMAIL: str = "admin@cernova.com.br"
 
 class EmailService:
     @staticmethod
