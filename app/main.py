@@ -1,8 +1,10 @@
 ﻿from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import text
-from app.database.session import get_db, engine
-from app.database.models import Base
+from app.database.session import get_db, engine, Base
+
+# Importar modelos de Medicina para criar tabelas
+from app.modulos.medicina.models import Consultorio, Medico, Paciente, Consulta, Prontuario, Procedimento
 
 # Criar tabelas
 Base.metadata.create_all(bind=engine)
@@ -51,7 +53,6 @@ async def root():
 async def criar_consultorio(nome: str, cnpj: str, db: Session = Depends(get_db)):
     """Criar novo consultório"""
     try:
-        from app.modulos.medicina.models import Consultorio
         consultorio = Consultorio(
             nome=nome,
             cnpj=cnpj,
@@ -74,7 +75,6 @@ async def criar_consultorio(nome: str, cnpj: str, db: Session = Depends(get_db))
 async def listar_consultorios(db: Session = Depends(get_db)):
     """Listar consultórios"""
     try:
-        from app.modulos.medicina.models import Consultorio
         consultorios = db.query(Consultorio).all()
         return [
             {
@@ -100,7 +100,6 @@ async def criar_medico(
 ):
     """Cadastrar novo médico"""
     try:
-        from app.modulos.medicina.models import Medico
         medico = Medico(
             nome_completo=nome_completo,
             cpf=cpf,
@@ -126,7 +125,6 @@ async def criar_medico(
 async def listar_medicos(consultorio_id: str = None, db: Session = Depends(get_db)):
     """Listar médicos"""
     try:
-        from app.modulos.medicina.models import Medico
         query = db.query(Medico)
         if consultorio_id:
             query = query.filter(Medico.consultorio_id == consultorio_id)
@@ -155,8 +153,6 @@ async def criar_paciente(
     """Registrar novo paciente"""
     try:
         from datetime import datetime
-        from app.modulos.medicina.models import Paciente
-        
         data = datetime.fromisoformat(data_nascimento)
         paciente = Paciente(
             nome_completo=nome_completo,
@@ -181,7 +177,6 @@ async def criar_paciente(
 async def listar_pacientes(consultorio_id: str = None, db: Session = Depends(get_db)):
     """Listar pacientes"""
     try:
-        from app.modulos.medicina.models import Paciente
         query = db.query(Paciente)
         if consultorio_id:
             query = query.filter(Paciente.consultorio_id == consultorio_id)
