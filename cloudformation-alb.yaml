@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Cernova v2.0 - Load Balancer + Auto Scaling"
+
+Parameters:
+  VpcId:
+    Type: String
+    Default: vpc-0ae0e6cf0779a5a5f
+    Description: VPC ID
+
+Resources:
+  CernovaALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: cernova-rbv1-alb
+      Scheme: internet-facing
+      Type: application
+      Subnets:
+        - subnet-0915c4bba57a7bc90
+      SecurityGroups:
+        - !Ref ALBSecurityGroup
+      Tags:
+        - Key: Name
+          Value: cernova-rbv1-alb
+
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: cernova-alb-sg
+      GroupDescription: Security group para ALB
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+
+  CernovaTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: cernova-rbv1-tg
+      Port: 8000
+      Protocol: HTTP
+      VpcId: !Ref VpcId
+      TargetType: ip
+      HealthCheckEnabled: true
+      HealthCheckPath: /health
+      HealthCheckProtocol: HTTP
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+      Matcher:
+        HttpCode: 200
+
+  ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !GetAtt CernovaALB.LoadBalancerArn
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !GetAtt CernovaTargetGroup.TargetGroupArn
+
+Outputs:
+  LoadBalancerDNS:
+    Description: DNS do Load Balancer
+    Value: !GetAtt CernovaALB.DNSName
+    Export:
+      Name: CernovaALB-DNS
