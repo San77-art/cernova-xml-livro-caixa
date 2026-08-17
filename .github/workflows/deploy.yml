@@ -54,7 +54,7 @@ jobs:
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: task-definition-v11.json
+          task-definition: task-definition.json
           container-name: cernova-rbv1
           image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
 
@@ -71,3 +71,4 @@ jobs:
           echo "✅ Deploy concluído com sucesso!"
           echo "Commit: ${{ github.sha }}"
           echo "Branch: ${{ github.ref }}"
+
