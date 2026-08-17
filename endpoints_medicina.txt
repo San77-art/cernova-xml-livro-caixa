@@ -1,0 +1,60 @@
+﻿# ============ MEDICINA ENDPOINTS ============
+
+@app.post("/medicina/consultorios")
+async def criar_consultorio(nome: str, cnpj: str, email_contato: str = None, telefone: str = None, db: Session = Depends(get_db)):
+    try:
+        from app.modulos.medicina.models import Consultorio
+        consultorio = Consultorio(nome=nome, cnpj=cnpj, email_contato=email_contato, telefone=telefone, empresa_id="default")
+        db.add(consultorio)
+        db.commit()
+        db.refresh(consultorio)
+        return {"id": str(consultorio.id), "nome": consultorio.nome, "cnpj": consultorio.cnpj, "status": "criado"}
+    except Exception as e:
+        return {"status": "erro", "mensagem": str(e)}
+
+@app.get("/medicina/consultorios")
+async def listar_consultorios(db: Session = Depends(get_db)):
+    try:
+        from app.modulos.medicina.models import Consultorio
+        consultorios = db.query(Consultorio).all()
+        return [{"id": str(c.id), "nome": c.nome, "cnpj": c.cnpj} for c in consultorios]
+    except Exception as e:
+        return {"status": "erro", "mensagem": str(e)}
+
+@app.post("/medicina/medicos")
+async def criar_medico(nome_completo: str, cpf: str, crm: str, especialidade: str, consultorio_id: str, db: Session = Depends(get_db)):
+    try:
+        from app.modulos.medicina.models import Medico
+        medico = Medico(nome_completo=nome_completo, cpf=cpf, crm=crm, especialidade=especialidade, consultorio_id=consultorio_id)
+        db.add(medico)
+        db.commit()
+        db.refresh(medico)
+        return {"id": str(medico.id), "nome": medico.nome_completo, "status": "criado"}
+    except Exception as e:
+        return {"status": "erro", "mensagem": str(e)}
+
+@app.post("/medicina/pacientes")
+async def criar_paciente(nome_completo: str, cpf: str, data_nascimento: str, consultorio_id: str, db: Session = Depends(get_db)):
+    try:
+        from datetime import datetime
+        from app.modulos.medicina.models import Paciente
+        paciente = Paciente(nome_completo=nome_completo, cpf=cpf, data_nascimento=datetime.fromisoformat(data_nascimento), consultorio_id=consultorio_id)
+        db.add(paciente)
+        db.commit()
+        db.refresh(paciente)
+        return {"id": str(paciente.id), "nome": paciente.nome_completo, "status": "criado"}
+    except Exception as e:
+        return {"status": "erro", "mensagem": str(e)}
+
+@app.post("/medicina/consultas")
+async def agendar_consulta(paciente_id: str, medico_id: str, data_hora: str, db: Session = Depends(get_db)):
+    try:
+        from datetime import datetime
+        from app.modulos.medicina.models import Consulta
+        consulta = Consulta(paciente_id=paciente_id, medico_id=medico_id, data_hora=datetime.fromisoformat(data_hora))
+        db.add(consulta)
+        db.commit()
+        db.refresh(consulta)
+        return {"id": str(consulta.id), "status": "agendada"}
+    except Exception as e:
+        return {"status": "erro", "mensagem": str(e)}
