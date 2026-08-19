@@ -3,8 +3,14 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.database.session import get_db, engine, Base
 
-# Importar modelos de Medicina para criar tabelas
+# Importar modelos de Medicina
 from app.modulos.medicina.models import Consultorio, Medico, Paciente, Consulta, Prontuario, Procedimento
+
+# Importar modelos de Juridico
+from app.modulos.juridico.models import Norma
+
+# Importar rotas
+from app.modulos.juridico.routes import router as juridico_router
 
 # Criar tabelas
 Base.metadata.create_all(bind=engine)
@@ -12,9 +18,12 @@ Base.metadata.create_all(bind=engine)
 # Criar app
 app = FastAPI(
     title="Cernova RBV1 v2.0",
-    description="Motor Documental + XML + Livro Caixa + Medicina",
+    description="Motor Documental + XML + Livro Caixa + Medicina + Base Jurídica",
     version="2.0.0"
 )
+
+# Registrar routers
+app.include_router(juridico_router)
 
 # ============ HEALTH CHECK ============
 @app.get("/health")
@@ -25,7 +34,7 @@ async def health_check(db: Session = Depends(get_db)):
             "status": "OK",
             "database": "Connected",
             "version": "2.0.0",
-            "modulos": ["xml", "livro_caixa", "medicina"]
+            "modulos": ["xml", "livro_caixa", "medicina", "juridico"]
         }
     except Exception as e:
         return {
@@ -40,11 +49,12 @@ async def root():
     return {
         "status": "Cernova RBV1 v2.0 - Sistema rodando",
         "versao": "2.0.0",
-        "modulos": ["xml", "livro_caixa", "medicina"],
+        "modulos": ["xml", "livro_caixa", "medicina", "juridico"],
         "endpoints": {
             "health": "/health",
             "docs": "/docs",
-            "medicina": "/medicina/consultorios"
+            "medicina": "/medicina/consultorios",
+            "juridico": "/juridico/normas"
         }
     }
 
