@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Transcrição — Raio-X de Exposição (exemplo: clínica de convênio)</title>
+<style>
+  :root{
+    --navy:#0e2a47; --teal:#1b9e8f; --teal-d:#157a6e; --bg:#f4f7fa; --card:#fff;
+    --ink:#1d2733; --muted:#5b6b7c; --line:#e2e9f0; --vermelho:#d8472b;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5; margin:0; padding:28px 14px 60px;}
+  .wrap{max-width:760px; margin:0 auto;}
+  header{display:flex; align-items:center; gap:12px; margin-bottom:6px;}
+  .logo{width:42px; height:42px; border-radius:11px; background:linear-gradient(135deg,var(--navy),var(--teal));
+    display:grid; place-items:center; color:#fff; font-weight:800;}
+  .brand{font-weight:800; color:var(--navy); font-size:18px;}
+  .brand small{display:block; font-weight:500; color:var(--muted); font-size:12.5px;}
+  h1{font-size:22px; color:var(--navy); margin:18px 0 2px;}
+  .sub{color:var(--muted); font-size:14px; margin:0 0 18px;}
+  .nota{background:#fff8ec; border:1px solid #f3e3c0; border-radius:12px; padding:10px 14px;
+    font-size:13px; color:#7a5b16; margin-bottom:22px;}
+  .sec{font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--teal-d);
+    margin:24px 0 10px; padding-bottom:5px; border-bottom:2px solid #e8f5f3;}
+  .turn{display:flex; gap:10px; margin:12px 0;}
+  .turn.cli{flex-direction:row-reverse;}
+  .av{flex:0 0 34px; width:34px; height:34px; border-radius:50%; display:grid; place-items:center;
+    font-weight:700; color:#fff; font-size:13px;}
+  .av.alice{background:linear-gradient(135deg,var(--teal),var(--navy));}
+  .av.cli{background:#90a4b8;}
+  .bub{max-width:78%; padding:11px 14px; border-radius:14px; font-size:15px;}
+  .alice .bub{background:#eef4f9; border-radius:4px 14px 14px 14px; color:var(--ink);}
+  .cli .bub{background:var(--teal); color:#fff; border-radius:14px 4px 14px 14px; font-weight:600;}
+  .who{font-size:11px; color:var(--muted); margin-bottom:3px;}
+  .cli .who{text-align:right;}
+  .result{margin-top:26px; background:var(--card); border:1px solid var(--line); border-radius:16px;
+    box-shadow:0 8px 30px rgba(14,42,71,.08); padding:20px; text-align:center;}
+  .result .faixa{font-size:22px; font-weight:800; color:var(--vermelho); margin:4px 0;}
+  .result p{color:var(--muted); font-size:14px; margin:4px 0;}
+  .foot{margin-top:24px; font-size:12px; color:var(--muted); border-top:1px solid var(--line); padding-top:12px;}
+  @media print{ body{background:#fff;} .result{box-shadow:none;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">JC</div>
+    <div class="brand">Junior Contabilidade<small>Assessoria para médicos e clínicas</small></div>
+  </header>
+
+  <h1>Transcrição — Raio-X de Exposição</h1>
+  <p class="sub">Exemplo de sessão · Agente <strong>Alice</strong> · perfil: <strong>Clínica de convênio</strong> (Lucro Presumido)</p>
+  <div class="nota">⚠️ Cliente fictício, usado para teste e demonstração. As respostas foram roteirizadas para ilustrar uma clínica com várias exposições abertas. Nenhum dado real.</div>
+
+  <div class="sec">Boas-vindas e consentimento (LGPD)</div>
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">Oi! Sou a Alice, especialista em estrutura fiscal, patrimonial e de governança para médicos. Em poucos minutos eu mostro os riscos que o seu consultório ou clínica pode estar correndo. Não pergunto nada sobre pacientes — só sobre a estrutura do negócio. Antes de começar, preciso do seu OK para usar suas respostas no resultado e para o nosso time entrar em contato (consentimento — art. 7º, I, da LGPD).</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Li e concordo. Pode começar.</div></div></div>
+
+  <div class="sec">Identificação e segmentação</div>
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">Vamos começar entendendo sua estrutura. Como você atua hoje?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Tenho 1 PJ / clínica.</div></div></div>
+
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">De onde vem a maior parte da sua receita?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Convênios / planos de saúde.</div></div></div>
+
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">Faixa de faturamento anual, somando tudo?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">R$ 1 – 4,8 milhões.</div></div></div>
+
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">E o regime tributário atual?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Lucro Presumido.</div></div></div>
+
+  <div class="sec">Tributação da clínica</div>
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">Vamos olhar a parte tributária da clínica. Vocês usam (ou querem usar) a tributação reduzida de “serviços hospitalares” — a presunção de 8% de IRPJ e 12% de CSLL?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Sim, e não cumprimos sociedade empresária / sem licença Anvisa.</div></div></div>
+
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">Vocês separam a receita de consulta simples das demais (procedimentos, exames, terapias)?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Não / não sei.</div></div></div>
+
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">A clínica está registrada/licenciada na Anvisa/vigilância sanitária e em dia?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Não / não sei.</div></div></div>
+
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">Se fazem análises clínicas/laboratório (inclusive testes rápidos), conhecem a norma vigente (RDC 978/2025)?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Não fazemos análises clínicas.</div></div></div>
+
+  <div class="sec">Relação com os convênios</div>
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">Sobre a sua relação com os convênios. Há contrato escrito com todas as operadoras com quem vocês trabalham?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Não / só com algumas.</div></div></div>
+
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">Vocês têm uma rotina formal de recurso de glosa (faturamento em TISS, prazos, contestação)?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Não / não sei.</div></div></div>
+
+  <div class="sec">Dados de pacientes e governança</div>
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">Quase lá. Vocês tratam dados de pacientes com base legal definida, controle de acesso e plano de incidente?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Não / não sei.</div></div></div>
+
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">Sabem que um incidente relevante (vazamento) precisa ser comunicado à ANPD em 3 dias úteis?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Sim, sabíamos.</div></div></div>
+
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">Atendem por telemedicina com registro em prontuário?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Não fazemos telemedicina.</div></div></div>
+
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">A publicidade e as redes sociais seguem a Resolução CFM 2.336/2023 (CRM/RQE, regras de imagem e preço)?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Sim, seguem as regras.</div></div></div>
+
+  <div class="sec">Transição tributária 2026</div>
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">Por fim, a transição de 2026. Se a clínica fosse do Simples, já estaria pronta para a NFS-e nacional (obrigatória desde set/2026)?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Não somos do Simples.</div></div></div>
+
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">E o sistema de vocês já emite documento com destaque de CBS/IBS (vigente desde jan/2026)?</div></div></div>
+  <div class="turn cli"><div class="av cli">C</div><div><div class="who">Cliente</div><div class="bub">Não / não sei.</div></div></div>
+
+  <div class="turn alice"><div class="av alice">A</div><div><div class="who">Alice</div><div class="bub">Perfeito, terminei a leitura. Vou te mostrar o resultado.</div></div></div>
+
+  <div class="result">
+    <div style="font-size:13px; color:var(--muted);">Resultado do Raio-X</div>
+    <div class="faixa">🔴 Exposição alta</div>
+    <p>Pontuação de exposição: <strong>17</strong> · 5 alertas (3 de severidade alta)</p>
+    <p>Frentes abertas: tributação (serviços hospitalares), contrato/glosa de convênios e proteção de dados (LGPD).</p>
+    <p style="margin-top:8px;">→ O detalhamento de cada alerta, com impacto e fundamento jurídico, está no <strong>Relatório do Raio-X</strong>.</p>
+  </div>
+
+  <div class="foot">
+    Triagem preliminar automatizada, com base em normas e jurisprudência vigentes (validadas em 06/2026). Não constitui parecer jurídico-contábil; a confirmação ocorre no diagnóstico. · Junior Contabilidade &amp; Assessoria
+  </div>
+</div>
+</body>
+</html>

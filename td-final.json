@@ -1,0 +1,35 @@
+﻿{
+    "memory":  "512",
+    "executionRoleArn":  "arn:aws:iam::526426842645:role/ecsTaskExecutionRole",
+    "family":  "cernova-rbv1-python",
+    "networkMode":  "awsvpc",
+    "requiresCompatibilities":  [
+                                    "FARGATE"
+                                ],
+    "containerDefinitions":  [
+                                 {
+                                     "portMappings":  [
+                                                          {
+                                                              "containerPort":  8000
+                                                          }
+                                                      ],
+                                     "logConfiguration":  {
+                                                              "logDriver":  "awslogs",
+                                                              "options":  {
+                                                                              "awslogs-region":  "us-east-1",
+                                                                              "awslogs-stream-prefix":  "ecs",
+                                                                              "awslogs-group":  "/ecs/cernova-rbv1"
+                                                                          }
+                                                          },
+                                     "name":  "cernova-rbv1",
+                                     "environment":  [
+                                                         {
+                                                             "value":  "postgresql://postgres:CernovaRB2026!@cernova-rb-db.c61cukey2jxy.us-east-1.rds.amazonaws.com:5432/cernova_rb",
+                                                             "name":  "DATABASE_URL"
+                                                         }
+                                                     ],
+                                     "image":  "526426842645.dkr.ecr.us-east-1.amazonaws.com/cernova-rbv1:latest"
+                                 }
+                             ],
+    "cpu":  "256"
+}

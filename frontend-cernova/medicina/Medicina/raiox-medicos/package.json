@@ -1,0 +1,16 @@
+{
+  "name": "raiox-medicos",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Raio-X de Exposição — agente Alice (degrau 0) para médicos e clínicas. Junior Contabilidade.",
+  "scripts": {
+    "build:kb": "node build-kb.mjs",
+    "eval": "node eval/run-eval.mjs",
+    "dev": "wrangler pages dev public --compatibility-date=2025-01-01",
+    "deploy": "wrangler pages deploy public --project-name=raiox-medicos"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

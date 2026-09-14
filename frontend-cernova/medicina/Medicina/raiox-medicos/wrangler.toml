@@ -1,0 +1,10 @@
+name = "raiox-medicos"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "public"
+
+# Secrets (NÃO ficam aqui — são configurados no painel do Cloudflare ou via
+# `wrangler pages secret put`):
+#   ANTHROPIC_API_KEY   -> chave da API da Anthropic (platform.claude.com)
+#   SHEETS_WEBHOOK_URL  -> URL /exec do Apps Script da planilha de leads
+# Variável opcional (pode ficar como var pública):
+#   MODELO              -> default claude-sonnet-4-6

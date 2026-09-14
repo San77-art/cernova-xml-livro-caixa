@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Raio-X de Exposição · Médicos e Clínicas — Junior Contabilidade</title>
+  <meta name="description" content="Triagem gratuita que revela a exposição jurídico-fiscal do seu consultório ou clínica. 3 minutos." />
+  <style>
+    :root {
+      --navy: #15304c;
+      --navy-2: #1d3f63;
+      --teal: #2f5d8a;      /* azul sóbrio (acento — botões, destaques) */
+      --teal-d: #244a6e;
+      --bg: #f2f5f8;
+      --card: #ffffff;
+      --ink: #1f2a36;
+      --muted: #5b6b7c;
+      --line: #e3e9ef;
+      /* faixas do velocímetro — tons dessaturados (sinal discreto) */
+      --verde: #5a8f6e;
+      --amarelo: #b08f3c;
+      --vermelho: #9e4733;
+      /* severidade dos alertas — escala de azul, sem vermelho/amarelo */
+      --sev-alto: #15304c;
+      --sev-medio: #3f6390;
+      --sev-baixo: #8aa0b8;
+      --shadow: 0 8px 30px rgba(21,48,76,.09);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--ink); line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 680px; margin: 0 auto; padding: 20px 16px 60px; min-height: 100vh; }
+    header.top { display: flex; align-items: center; gap: 10px; padding: 6px 2px 18px; }
+    .logo { width: 34px; height: 34px; border-radius: 9px; background: linear-gradient(135deg, var(--navy), var(--teal)); display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 16px; }
+    .brand { font-weight: 700; color: var(--navy); font-size: 15px; }
+    .brand small { display: block; font-weight: 500; color: var(--muted); font-size: 12px; }
+
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 26px 22px; }
+    .screen { display: none; animation: fade .35s ease; }
+    .screen.active { display: block; }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    h1 { font-size: 26px; line-height: 1.2; margin: 4px 0 10px; color: var(--navy); }
+    h2 { font-size: 20px; margin: 0 0 8px; color: var(--navy); }
+    p { margin: 0 0 14px; color: var(--ink); }
+    .lead { font-size: 17px; color: var(--muted); }
+    .muted { color: var(--muted); }
+    .pill { display: inline-block; background: #e8f5f3; color: var(--teal-d); font-weight: 600; font-size: 12.5px; padding: 5px 11px; border-radius: 999px; margin-bottom: 12px; }
+
+    button { font: inherit; cursor: pointer; border: none; border-radius: 12px; }
+    .btn-primary { background: var(--teal); color: #fff; font-weight: 700; padding: 14px 20px; width: 100%; font-size: 16px; transition: background .15s; }
+    .btn-primary:hover { background: var(--teal-d); }
+    .btn-primary:disabled { background: #b9c6d1; cursor: not-allowed; }
+    .btn-ghost { background: transparent; color: var(--muted); padding: 10px; width: 100%; font-size: 14px; }
+
+    /* Quiz */
+    .progress { height: 6px; background: #e7eef4; border-radius: 999px; overflow: hidden; margin-bottom: 18px; }
+    .progress > i { display: block; height: 100%; background: linear-gradient(90deg, var(--teal), var(--navy)); width: 0; transition: width .3s; }
+    .alice { display: flex; gap: 10px; margin-bottom: 16px; }
+    .alice .av { flex: 0 0 36px; width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--teal), var(--navy)); color: #fff; display: grid; place-items: center; font-weight: 700; }
+    .alice .bubble { background: #eef4f9; border-radius: 4px 14px 14px 14px; padding: 12px 14px; color: var(--ink); }
+    .qtext { font-size: 18px; font-weight: 600; color: var(--navy); margin: 4px 0 16px; }
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    .opt { text-align: left; background: #fff; border: 1.5px solid var(--line); color: var(--ink); padding: 13px 15px; font-size: 15px; transition: all .12s; }
+    .opt:hover { border-color: var(--teal); background: #f4fbfa; }
+    .opt.sel { border-color: var(--teal); background: #e8f5f3; font-weight: 600; }
+    .freebox { margin-top: 14px; display: flex; gap: 8px; }
+    .freebox input { flex: 1; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; font: inherit; }
+    .freebox button { background: var(--navy); color: #fff; padding: 0 16px; }
+    .backlink { background: none; color: var(--muted); width: auto; padding: 8px 0; font-size: 14px; margin-top: 6px; }
+
+    /* Velocímetro */
+    .gauge-wrap { text-align: center; padding: 8px 0 4px; }
+    .gauge { width: 240px; max-width: 80%; margin: 0 auto; }
+    .gband { font-size: 22px; font-weight: 800; margin: 6px 0 2px; }
+    .gband.verde { color: var(--verde); } .gband.amarelo { color: var(--amarelo); } .gband.vermelho { color: var(--vermelho); }
+    .locked { position: relative; margin-top: 18px; border: 1px dashed var(--line); border-radius: 14px; padding: 18px; background: #fafcfe; }
+    .locked .blur { filter: blur(5px); user-select: none; pointer-events: none; }
+    .lock-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--navy); color: #fff; font-size: 12.5px; font-weight: 600; padding: 5px 12px; border-radius: 999px; margin-bottom: 10px; }
+
+    /* Form */
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 13.5px; font-weight: 600; color: var(--navy); margin-bottom: 5px; }
+    .field input { width: 100%; border: 1.5px solid var(--line); border-radius: 12px; padding: 12px 14px; font: inherit; }
+    .field input:focus { outline: none; border-color: var(--teal); }
+    .check { display: flex; gap: 9px; align-items: flex-start; font-size: 13px; color: var(--muted); margin: 10px 0 16px; }
+    .check input { margin-top: 3px; }
+    .err { color: var(--vermelho); font-size: 13px; margin: 6px 0; min-height: 16px; }
+
+    /* Relatório */
+    .alert { border: 1px solid var(--line); border-left: 5px solid var(--sev-medio); border-radius: 12px; padding: 14px 16px; margin-bottom: 12px; background: #fff; }
+    .alert.alto { border-left-color: var(--sev-alto); }
+    .alert.medio { border-left-color: var(--sev-medio); }
+    .alert.baixo { border-left-color: var(--sev-baixo); }
+    .alert h3 { margin: 0 0 6px; font-size: 16px; color: var(--navy); }
+    .alert .imp { font-size: 14.5px; margin-bottom: 8px; }
+    .alert .fund { font-size: 12.5px; color: var(--muted); font-style: italic; }
+    .sev-tag { float: right; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; padding: 2px 8px; border-radius: 999px; color:#fff; }
+    .sev-tag.alto { background: var(--sev-alto); } .sev-tag.medio { background: var(--sev-medio); } .sev-tag.baixo { background: var(--sev-baixo); }
+    .cta-box { background: linear-gradient(135deg, var(--navy), var(--navy-2)); color: #fff; border-radius: 14px; padding: 20px; margin: 18px 0 14px; }
+    .cta-box p { color: #dfeaf4; }
+    .cta-box .btn-primary { background: var(--teal); }
+    .disclaimer { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+    .nao-aval { background: #eef3f8; border: 1px solid #dce5ee; border-radius: 12px; padding: 12px 14px; font-size: 14px; color: #41566c; margin: 6px 0 4px; }
+
+    .spinner { width: 28px; height: 28px; border: 3px solid #d8e2ec; border-top-color: var(--teal); border-radius: 50%; animation: spin .8s linear infinite; margin: 30px auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .center { text-align: center; }
+    footer { text-align: center; font-size: 12px; color: var(--muted); padding: 22px 0 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div class="logo">JC</div>
+      <div class="brand">Junior Contabilidade<small>Assessoria para médicos e clínicas</small></div>
+    </header>
+
+    <!-- 1. LANDING -->
+    <section id="s-landing" class="screen active">
+      <div class="card">
+        <span class="pill">Gratuito · 3 minutos · sem compromisso</span>
+        <h1>Raio-X de Exposição</h1>
+        <p class="lead">Em poucas perguntas, eu mostro os riscos jurídico-fiscais que o seu consultório ou clínica pode estar correndo — e que normalmente passam despercebidos até virar autuação.</p>
+        <p class="muted">Sou a <strong>Alice</strong>, especialista em estrutura fiscal, patrimonial e de governança para médicos. Não pergunto nada sobre pacientes — só sobre a estrutura do seu negócio.</p>
+        <button class="btn-primary" id="go-consent">Começar meu Raio-X →</button>
+      </div>
+      <footer>Junior Contabilidade &amp; Assessoria · triagem preliminar automatizada</footer>
+    </section>
+
+    <!-- 2. CONSENTIMENTO LGPD -->
+    <section id="s-consent" class="screen">
+      <div class="card">
+        <h2>Antes de começar</h2>
+        <p>Este Raio-X coleta apenas os dados que você informar (respostas sobre a estrutura do negócio e, ao final, seu contato). <strong>Não coletamos nenhum dado de paciente.</strong></p>
+        <p class="muted" style="font-size:14px;">Usamos seus dados para (a) gerar seu resultado na hora e (b) permitir que nosso time comercial entre em contato sobre o diagnóstico. Você pode pedir a exclusão dos seus dados a qualquer momento pelo e-mail do escritório. Base legal: consentimento (art. 7º, I, LGPD).</p>
+        <label class="check">
+          <input type="checkbox" id="consent-check" />
+          <span>Li e concordo com o uso dos meus dados para gerar o resultado e ser contatado(a) sobre o diagnóstico, conforme descrito acima.</span>
+        </label>
+        <button class="btn-primary" id="go-quiz" disabled>Concordo e quero começar</button>
+        <button class="btn-ghost" id="back-landing">Voltar</button>
+      </div>
+    </section>
+
+    <!-- 3. QUIZ -->
+    <section id="s-quiz" class="screen">
+      <div class="card">
+        <div class="progress"><i id="bar"></i></div>
+        <div class="alice">
+          <div class="av">A</div>
+          <div class="bubble" id="alice-says">Vamos lá. Vou te fazer algumas perguntas rápidas.</div>
+        </div>
+        <div class="qtext" id="q-text"></div>
+        <div class="options" id="q-options"></div>
+        <div class="freebox">
+          <input type="text" id="free-input" placeholder="Tem dúvida? Escreva aqui para a Alice…" />
+          <button id="free-send">Enviar</button>
+        </div>
+        <button class="backlink" id="q-back">← pergunta anterior</button>
+      </div>
+    </section>
+
+    <!-- 4. VELOCÍMETRO + GATE -->
+    <section id="s-gate" class="screen">
+      <div class="card">
+        <div class="gauge-wrap">
+          <div class="muted" style="font-size:14px;">Seu nível de exposição</div>
+          <div class="gauge" id="gauge"></div>
+          <div class="gband" id="gband"></div>
+          <p id="gleitura" class="muted" style="font-size:15px; max-width:440px; margin:6px auto 0;"></p>
+        </div>
+
+        <div class="locked">
+          <span class="lock-badge">🔒 <span id="lock-n">seus alertas</span> destravados em 1 passo</span>
+          <div class="blur" aria-hidden="true">
+            <div class="alert alto"><h3>Alerta de exposição detectado nesta área</h3><div class="imp">Impacto traduzido do risco encontrado na sua estrutura…</div><div class="fund">base: jurisprudência e normas vigentes</div></div>
+            <div class="alert medio"><h3>Segundo ponto que merece atenção</h3><div class="imp">Detalhe do que pode custar caro se não for tratado…</div></div>
+          </div>
+          <p style="font-size:14px; margin-top:10px;">Informe seu contato para ver os <strong id="lock-n2">alertas</strong> detalhados, com o impacto e o fundamento de cada um. É gratuito.</p>
+        </div>
+
+        <div style="margin-top:16px;">
+          <div class="field"><label>Nome</label><input id="f-nome" autocomplete="name" /></div>
+          <div class="field"><label>E-mail</label><input id="f-email" type="email" autocomplete="email" /></div>
+          <div class="field"><label>WhatsApp</label><input id="f-whats" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" /></div>
+          <div class="field"><label>Especialidade <span class="muted">(opcional)</span></label><input id="f-esp" /></div>
+          <div class="field"><label>Cidade <span class="muted">(opcional)</span></label><input id="f-cidade" /></div>
+          <div class="err" id="gate-err"></div>
+          <button class="btn-primary" id="go-report">Ver meus alertas detalhados →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. RELATÓRIO -->
+    <section id="s-report" class="screen">
+      <div class="card">
+        <div id="report-loading" class="center"><div class="spinner"></div><p class="muted">A Alice está montando seu relatório…</p></div>
+        <div id="report-body" style="display:none;">
+          <div class="gauge-wrap">
+            <div class="gauge" id="gauge2"></div>
+            <div class="gband" id="gband2"></div>
+          </div>
+          <p id="r-leitura" style="font-size:16px;"></p>
+          <h2 style="margin-top:18px;">Seus principais alertas</h2>
+          <div id="r-alertas"></div>
+          <div class="nao-aval" id="r-naoaval"></div>
+          <div class="cta-box">
+            <p id="r-cta" style="margin-bottom:14px; font-size:16px;"></p>
+            <button class="btn-primary" id="r-cta-btn">Quero conversar sobre o diagnóstico</button>
+          </div>
+          <div class="disclaimer" id="r-disclaimer"></div>
+        </div>
+      </div>
+      <footer>Junior Contabilidade &amp; Assessoria</footer>
+    </section>
+  </div>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
