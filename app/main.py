@@ -6,8 +6,14 @@ from app.database.session import get_db, engine, Base
 # Importar modelos de Medicina para criar tabelas
 from app.modulos.medicina.models import Consultorio, Medico, Paciente, Consulta, Prontuario, Procedimento
 
+# Importar modelo de Idempotência ← NOVO!
+from app.database.models import IdempotencyKey
+
 # Importar rotas ETL
 from app.modulos.etl.routes import router as etl_router
+
+# Importar middleware de idempotência
+from app.middleware.idempotency import idempotency_middleware
 
 # Criar tabelas
 Base.metadata.create_all(bind=engine)
@@ -18,6 +24,9 @@ app = FastAPI(
     description="Motor Documental + XML + Livro Caixa + Medicina",
     version="2.0.0"
 )
+
+# Registrar middleware de idempotência
+app.middleware("http")(idempotency_middleware)
 
 # Registrar routers
 app.include_router(etl_router)
