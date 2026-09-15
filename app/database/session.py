@@ -5,7 +5,8 @@ import os
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:CernovaRB2026!@cernova-rb-db.c61cukey2jxy.us-east-1.rds.amazonaws.com:5432/cernova_rb")
+# Senha nova: NovaPassword123!@Segura
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:NovaPassword123!%40Segura@cernova-rb-db.c61cukey2jxy.us-east-1.rds.amazonaws.com:5432/cernova_rb")
 
 engine = create_engine(
     DATABASE_URL,

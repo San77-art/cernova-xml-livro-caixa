@@ -38,7 +38,14 @@ async def idempotency_middleware(request: Request, call_next):
             print(f"[IDEMPOTENCY] ✅ Chave {idempotency_key} já processada! Retornando resultado anterior...")
             
             # Retornar resposta cacheada
-            response_data = json.loads(existing_key.response) if existing_key.response else {}
+            if existing_key.response:
+                try:
+                    response_data = json.loads(existing_key.response)
+                except:
+                    response_data = {}
+            else:
+                response_data = {}
+            
             return JSONResponse(
                 status_code=200,
                 content=response_data,
@@ -96,6 +103,7 @@ async def idempotency_middleware(request: Request, call_next):
                 idempotency_entry.atualizado_em = datetime.utcnow()
                 db.commit()
                 print(f"[IDEMPOTENCY] ✅ Chave {idempotency_key} - SUCESSO salvo!")
+                print(f"[IDEMPOTENCY] Response guardado: {str(response_json)[:100]}...")
         
         # SE ERRO, MARCAR COMO FAILED
         else:
