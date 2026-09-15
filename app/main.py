@@ -6,11 +6,14 @@ from app.database.session import get_db, engine, Base
 # Importar modelos de Medicina para criar tabelas
 from app.modulos.medicina.models import Consultorio, Medico, Paciente, Consulta, Prontuario, Procedimento
 
-# Importar modelo de Idempotência ← NOVO!
+# Importar modelo de Idempotência
 from app.database.models import IdempotencyKey
 
 # Importar rotas ETL
 from app.modulos.etl.routes import router as etl_router
+
+# Importar rotas de Validadores ← NOVO!
+from app.modulos.etl.validator_routes import router as validator_router
 
 # Importar middleware de idempotência
 from app.middleware.idempotency import idempotency_middleware
@@ -30,6 +33,7 @@ app.middleware("http")(idempotency_middleware)
 
 # Registrar routers
 app.include_router(etl_router)
+app.include_router(validator_router)  # ← NOVO!
 
 # ============ HEALTH CHECK ============
 @app.get("/health")
@@ -40,7 +44,7 @@ async def health_check(db: Session = Depends(get_db)):
             "status": "OK",
             "database": "Connected",
             "version": "2.0.0",
-            "modulos": ["xml", "livro_caixa", "medicina", "etl"]
+            "modulos": ["xml", "livro_caixa", "medicina", "etl", "validadores"]
         }
     except Exception as e:
         return {
@@ -55,12 +59,13 @@ async def root():
     return {
         "status": "Cernova RBV1 v2.0 - Sistema rodando",
         "versao": "2.0.0",
-        "modulos": ["xml", "livro_caixa", "medicina", "etl"],
+        "modulos": ["xml", "livro_caixa", "medicina", "etl", "validadores"],
         "endpoints": {
             "health": "/health",
             "docs": "/docs",
             "medicina": "/medicina/consultorios",
-            "etl": "/api/etl/tipos-suportados"
+            "etl": "/api/etl/tipos-suportados",
+            "validadores": "/api/etl/validadores/tipos-suportados"
         }
     }
 

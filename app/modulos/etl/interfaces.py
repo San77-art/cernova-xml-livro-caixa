@@ -24,3 +24,28 @@ class ProcessadorNota(ABC):
     def tipo_documento(self) -> str:
         """Que tipo de documento sou?"""
         pass
+
+
+# ============ VALIDADORES ============
+class ValidadorNota(ABC):
+    """Interface para validadores de notas fiscais"""
+    
+    @abstractmethod
+    def validar(self, dados: dict) -> dict:
+        """
+        Validar dados da nota
+        
+        Retorna:
+        {
+            "valido": bool,
+            "erros": [str],
+            "avisos": [str]
+        }
+        """
+        pass
+    
+    @property
+    @abstractmethod
+    def tipo_validador(self) -> str:
+        """Tipo: SEFAZ, DATABASE, ASSINATURA"""
+        pass
