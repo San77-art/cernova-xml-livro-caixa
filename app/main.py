@@ -12,8 +12,11 @@ from app.database.models import IdempotencyKey
 # Importar rotas ETL
 from app.modulos.etl.routes import router as etl_router
 
-# Importar rotas de Validadores ← NOVO!
+# Importar rotas de Validadores
 from app.modulos.etl.validator_routes import router as validator_router
+
+# Importar rotas de Notificadores
+from app.modulos.etl.notifier_routes import router as notifier_router
 
 # Importar middleware de idempotência
 from app.middleware.idempotency import idempotency_middleware
@@ -33,7 +36,8 @@ app.middleware("http")(idempotency_middleware)
 
 # Registrar routers
 app.include_router(etl_router)
-app.include_router(validator_router)  # ← NOVO!
+app.include_router(validator_router)
+# app.include_router(notifier_router)  # ← TEMPORARIAMENTE DESABILITADO (investigar travamento)
 
 # ============ HEALTH CHECK ============
 @app.get("/health")

@@ -49,3 +49,29 @@ class ValidadorNota(ABC):
     def tipo_validador(self) -> str:
         """Tipo: SEFAZ, DATABASE, ASSINATURA"""
         pass
+
+
+# ============ NOTIFICADORES ============
+class NotificadorNota(ABC):
+    """Interface para notificadores de notas fiscais"""
+    
+    @abstractmethod
+    def notificar(self, dados: dict, mensagem: str) -> dict:
+        """
+        Enviar notificação
+        
+        Retorna:
+        {
+            "enviado": bool,
+            "canal": str,
+            "destinatario": str,
+            "status": str
+        }
+        """
+        pass
+    
+    @property
+    @abstractmethod
+    def tipo_notificador(self) -> str:
+        """Tipo: EMAIL, SMS, WHATSAPP, PUSH"""
+        pass
