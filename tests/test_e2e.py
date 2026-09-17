@@ -167,5 +167,78 @@ class TestExportadores:
         print("✅ EXCEL exportado com sucesso!")
 
 
+
+# ============ TESTES AGENDADORES ============
+class TestAgendadores:
+    """Testa AgendamentoFactory"""
+    
+    def test_listar_agendadores(self):
+        """Testa GET /api/etl/agendadores/tipos-suportados"""
+        response = client.get("/api/etl/agendadores/tipos-suportados")
+        assert response.status_code == 200
+        data = response.json()
+        assert "agendadores" in data
+        assert "PRESENCIAL" in data["agendadores"]
+        assert "TELEMEDICINA" in data["agendadores"]
+        assert "HOMECARE" in data["agendadores"]
+        print(f"✅ Agendadores: {data['agendadores']}")
+    
+    def test_agendar_presencial(self):
+        """Testa agendamento presencial"""
+        response = client.post(
+            "/api/etl/agendadores/agendar/presencial",
+            params={
+                "paciente_nome": "João Silva",
+                "profissional_nome": "Dr. Carlos",
+                "data": "2026-09-20",
+                "horario": "14:00",
+                "consultorio": "Consultório 1"
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["agendado"] == True
+        assert data["tipo"] == "PRESENCIAL"
+        print("✅ Presencial agendado com sucesso!")
+    
+    def test_agendar_telemedicina(self):
+        """Testa agendamento telemedicina"""
+        response = client.post(
+            "/api/etl/agendadores/agendar/telemedicina",
+            params={
+                "paciente_nome": "Maria Santos",
+                "profissional_nome": "Dra. Ana",
+                "data": "2026-09-21",
+                "horario": "10:00",
+                "email": "maria@example.com"
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["agendado"] == True
+        assert data["tipo"] == "TELEMEDICINA"
+        assert "link_acesso" in data
+        print("✅ Telemedicina agendada com sucesso!")
+    
+    def test_agendar_homecare(self):
+        """Testa agendamento home care"""
+        response = client.post(
+            "/api/etl/agendadores/agendar/homecare",
+            params={
+                "paciente_nome": "Pedro Costa",
+                "profissional_nome": "Dr. Ricardo",
+                "data": "2026-09-22",
+                "horario": "15:00",
+                "endereco": "Rua das Flores 123",
+                "telefone": "(11)99999-9999"
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["agendado"] == True
+        assert data["tipo"] == "HOMECARE"
+        assert "tempo_deslocamento_min" in data
+        print("✅ Home care agendado com sucesso!")
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "-s"])

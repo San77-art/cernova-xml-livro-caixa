@@ -101,3 +101,31 @@ class ExportadorNota(ABC):
     def tipo_exportador(self) -> str:
         """Tipo: PDF, XML, JSON, EXCEL"""
         pass
+
+
+# ============ AGENDAMENTOS ============
+class AgendamentoNota(ABC):
+    """Interface para tipos de agendamento"""
+    
+    @abstractmethod
+    def agendar(self, dados: dict) -> dict:
+        """
+        Agendar consulta/serviço
+        
+        Retorna:
+        {
+            "agendado": bool,
+            "tipo": str,
+            "data": str,
+            "horario": str,
+            "paciente": str,
+            "profissional": str
+        }
+        """
+        pass
+    
+    @property
+    @abstractmethod
+    def tipo_agendamento(self) -> str:
+        """Tipo: PRESENCIAL, TELEMEDICINA, HOMECARE"""
+        pass
