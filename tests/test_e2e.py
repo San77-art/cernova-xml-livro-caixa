@@ -240,5 +240,76 @@ class TestAgendadores:
         assert "tempo_deslocamento_min" in data
         print("✅ Home care agendado com sucesso!")
 
+        
+
+# ============ TESTES PARSADORES ============
+class TestParsadores:
+    """Testa ParserFactory"""
+    
+    def test_listar_parsadores(self):
+        """Testa GET /api/etl/parsadores/tipos-suportados"""
+        response = client.get("/api/etl/parsadores/tipos-suportados")
+        assert response.status_code == 200
+        data = response.json()
+        assert "parsadores" in data
+        assert "NFe" in data["parsadores"]
+        assert "NFCe" in data["parsadores"]
+        assert "CTe" in data["parsadores"]
+        assert "GENERICO" in data["parsadores"]
+        print(f"✅ Parsadores: {data['parsadores']}")
+    
+    def test_parsear_generico(self):
+        """Testa parser genérico"""
+        xml = '<?xml version="1.0"?><nota><numero>001</numero><serie>1</serie><valor>1000.00</valor></nota>'
+        response = client.post(
+            "/api/etl/parsadores/parsear/generico",
+            params={"xml": xml}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["parseado"] == True
+        assert data["tipo"] == "GENERICO"
+        print("✅ Parser genérico funcionou!")
+    
+    def test_parsear_nfe(self):
+        """Testa parser NFe"""
+        xml = '<?xml version="1.0"?><NFe><ide><nNF>001</nNF><serie>1</serie><dhEmi>2026-09-17</dhEmi></ide><total><ICMSTot><vNF>1000.00</vNF></ICMSTot></total><emit><CNPJ>12345678000199</CNPJ></emit></NFe>'
+        response = client.post(
+            "/api/etl/parsadores/parsear/nfe",
+            params={"xml": xml}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["parseado"] == True
+        assert data["tipo"] == "NFe"
+        assert data["dados"]["numero"] == "001"
+        print("✅ Parser NFe funcionou!")
+    
+    def test_parsear_nfce(self):
+        """Testa parser NFCe"""
+        xml = '<?xml version="1.0"?><NFCe><ide><nNF>002</nNF><serie>1</serie><dhEmi>2026-09-17</dhEmi></ide><total><ICMSTot><vNF>500.00</vNF></ICMSTot></total><emit><CNPJ>12345678000199</CNPJ></emit></NFCe>'
+        response = client.post(
+            "/api/etl/parsadores/parsear/nfce",
+            params={"xml": xml}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["parseado"] == True
+        assert data["tipo"] == "NFCe"
+        print("✅ Parser NFCe funcionou!")
+    
+    def test_parsear_cte(self):
+        """Testa parser CTe"""
+        xml = '<?xml version="1.0"?><CTe><ide><nCT>003</nCT><serie>1</serie><dhEmi>2026-09-17</dhEmi></ide><total><vRec>200.00</vRec></total><emit><CNPJ>12345678000199</CNPJ></emit></CTe>'
+        response = client.post(
+            "/api/etl/parsadores/parsear/cte",
+            params={"xml": xml}
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["parseado"] == True
+        assert data["tipo"] == "CTe"
+        print("✅ Parser CTe funcionou!")
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "-s"])

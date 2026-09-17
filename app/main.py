@@ -21,6 +21,9 @@ from app.modulos.etl.exporter_routes import router as exporter_router
 # Importar rotas de Agendadores
 from app.modulos.etl.agendamento_routes import router as agendamento_router
 
+# Importar rotas de Parsadores
+from app.modulos.etl.parser_routes import router as parser_router
+
 # Importar middleware de idempotência
 from app.middleware.idempotency import idempotency_middleware
 
@@ -42,6 +45,7 @@ app.include_router(etl_router)
 app.include_router(validator_router)
 app.include_router(exporter_router)
 app.include_router(agendamento_router)
+app.include_router(parser_router)
 
 # ============ HEALTH CHECK ============
 @app.get("/health")
@@ -52,7 +56,7 @@ async def health_check(db: Session = Depends(get_db)):
             "status": "OK",
             "database": "Connected",
             "version": "2.0.0",
-            "modulos": ["xml", "livro_caixa", "medicina", "etl", "validadores", "exportadores", "agendadores"]
+            "modulos": ["xml", "livro_caixa", "medicina", "etl", "validadores", "exportadores", "agendadores", "parsadores"]
         }
     except Exception as e:
         return {
@@ -67,7 +71,7 @@ async def root():
     return {
         "status": "Cernova RBV1 v2.0 - Sistema rodando",
         "versao": "2.0.0",
-        "modulos": ["xml", "livro_caixa", "medicina", "etl", "validadores", "exportadores", "agendadores"],
+        "modulos": ["xml", "livro_caixa", "medicina", "etl", "validadores", "exportadores", "agendadores", "parsadores"],
         "endpoints": {
             "health": "/health",
             "docs": "/docs",
@@ -75,7 +79,8 @@ async def root():
             "etl": "/api/etl/tipos-suportados",
             "validadores": "/api/etl/validadores/tipos-suportados",
             "exportadores": "/api/etl/exportadores/tipos-suportados",
-            "agendadores": "/api/etl/agendadores/tipos-suportados"
+            "agendadores": "/api/etl/agendadores/tipos-suportados",
+            "parsadores": "/api/etl/parsadores/tipos-suportados"
         }
     }
 

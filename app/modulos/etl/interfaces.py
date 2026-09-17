@@ -129,3 +129,30 @@ class AgendamentoNota(ABC):
     def tipo_agendamento(self) -> str:
         """Tipo: PRESENCIAL, TELEMEDICINA, HOMECARE"""
         pass
+
+    
+
+# ============ PARSERS ============
+class ParserXML(ABC):
+    """Interface para parsers de XML"""
+    
+    @abstractmethod
+    def parsear(self, xml: str) -> dict:
+        """
+        Parsear XML e extrair dados estruturados
+        
+        Retorna:
+        {
+            "parseado": bool,
+            "tipo": str,
+            "dados": dict,
+            "campos_extraidos": int
+        }
+        """
+        pass
+    
+    @property
+    @abstractmethod
+    def tipo_parser(self) -> str:
+        """Tipo: NFe, NFCe, CTe, GENERICO"""
+        pass
