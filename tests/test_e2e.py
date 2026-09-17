@@ -311,5 +311,110 @@ class TestParsadores:
         assert data["tipo"] == "CTe"
         print("✅ Parser CTe funcionou!")
 
+        
+
+# ============ TESTES CONECTORES ============
+class TestConectores:
+    """Testa ConectorFactory"""
+    
+    def test_listar_estados(self):
+        """Testa GET /api/etl/conectores/estados-suportados"""
+        response = client.get("/api/etl/conectores/estados-suportados")
+        assert response.status_code == 200
+        data = response.json()
+        assert "estados" in data
+        assert "RS" in data["estados"]
+        assert "SP" in data["estados"]
+        assert "MG" in data["estados"]
+        print(f"✅ Estados SEFAZ: {data['estados']}")
+    
+    def test_conectar_rs(self):
+        """Testa conector SEFAZ-RS"""
+        response = client.post(
+            "/api/etl/conectores/conectar/rs",
+            params={
+                "cnpj": "12345678000199",
+                "numero_nfe": "000001",
+                "serie": "1"
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["conectado"] == True
+        assert data["estado"] == "RS"
+        assert "protocolo" in data
+        assert data["status_sefaz"] == "autorizado"
+        print("✅ Conector SEFAZ-RS funcionou!")
+    
+    def test_conectar_sp(self):
+        """Testa conector SEFAZ-SP"""
+        response = client.post(
+            "/api/etl/conectores/conectar/sp",
+            params={
+                "cnpj": "12345678000199",
+                "numero_nfe": "000002",
+                "serie": "1"
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["conectado"] == True
+        assert data["estado"] == "SP"
+        assert "protocolo" in data
+        assert data["status_sefaz"] == "autorizado"
+        print("✅ Conector SEFAZ-SP funcionou!")
+    
+    def test_conectar_mg(self):
+        """Testa conector SEFAZ-MG"""
+        response = client.post(
+            "/api/etl/conectores/conectar/mg",
+            params={
+                "cnpj": "12345678000199",
+                "numero_nfe": "000003",
+                "serie": "1"
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["conectado"] == True
+        assert data["estado"] == "MG"
+        assert "protocolo" in data
+        assert data["status_sefaz"] == "autorizado"
+        print("✅ Conector SEFAZ-MG funcionou!")
+    
+    def test_conectar_auto(self):
+        """Testa conector SEFAZ auto-detect"""
+        response = client.post(
+            "/api/etl/conectores/conectar/auto",
+            params={
+                "cnpj": "12345678000199",
+                "numero_nfe": "000004",
+                "estado": "SP",
+                "serie": "1"
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["conectado"] == True
+        assert data["estado"] == "SP"
+        print("✅ Conector SEFAZ auto-detect funcionou!")
+    
+    def test_conectar_multicanal(self):
+        """Testa conector SEFAZ multi-estado"""
+        response = client.post(
+            "/api/etl/conectores/conectar/multicanal",
+            params={
+                "cnpj": "12345678000199",
+                "numero_nfe": "000005",
+                "serie": "1"
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["multicanal"] == True
+        assert "conectores" in data
+        assert data["total_conectados"] >= 3
+        print("✅ Conector SEFAZ multicanal funcionou!")
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "-s"])

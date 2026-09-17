@@ -156,3 +156,36 @@ class ParserXML(ABC):
     def tipo_parser(self) -> str:
         """Tipo: NFe, NFCe, CTe, GENERICO"""
         pass
+
+    
+
+# ============ CONECTORES ============
+class ConectorSEFAZ(ABC):
+    """Interface para conectores SEFAZ por estado"""
+    
+    @abstractmethod
+    def conectar(self, dados: dict) -> dict:
+        """
+        Conectar e validar com SEFAZ
+        
+        Retorna:
+        {
+            "conectado": bool,
+            "estado": str,
+            "protocolo": str,
+            "status_sefaz": str
+        }
+        """
+        pass
+    
+    @property
+    @abstractmethod
+    def estado(self) -> str:
+        """Estado: RS, SP, MG, etc"""
+        pass
+    
+    @property
+    @abstractmethod
+    def url_sefaz(self) -> str:
+        """URL do webservice SEFAZ"""
+        pass

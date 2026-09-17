@@ -24,6 +24,9 @@ from app.modulos.etl.agendamento_routes import router as agendamento_router
 # Importar rotas de Parsadores
 from app.modulos.etl.parser_routes import router as parser_router
 
+# Importar rotas de Conectores
+from app.modulos.etl.conector_routes import router as conector_router
+
 # Importar middleware de idempotência
 from app.middleware.idempotency import idempotency_middleware
 
@@ -46,6 +49,7 @@ app.include_router(validator_router)
 app.include_router(exporter_router)
 app.include_router(agendamento_router)
 app.include_router(parser_router)
+app.include_router(conector_router)
 
 # ============ HEALTH CHECK ============
 @app.get("/health")
@@ -56,7 +60,7 @@ async def health_check(db: Session = Depends(get_db)):
             "status": "OK",
             "database": "Connected",
             "version": "2.0.0",
-            "modulos": ["xml", "livro_caixa", "medicina", "etl", "validadores", "exportadores", "agendadores", "parsadores"]
+            "modulos": ["xml", "livro_caixa", "medicina", "etl", "validadores", "exportadores", "agendadores", "parsadores", "conectores"]
         }
     except Exception as e:
         return {
@@ -71,7 +75,7 @@ async def root():
     return {
         "status": "Cernova RBV1 v2.0 - Sistema rodando",
         "versao": "2.0.0",
-        "modulos": ["xml", "livro_caixa", "medicina", "etl", "validadores", "exportadores", "agendadores", "parsadores"],
+        "modulos": ["xml", "livro_caixa", "medicina", "etl", "validadores", "exportadores", "agendadores", "parsadores", "conectores"],
         "endpoints": {
             "health": "/health",
             "docs": "/docs",
@@ -80,7 +84,8 @@ async def root():
             "validadores": "/api/etl/validadores/tipos-suportados",
             "exportadores": "/api/etl/exportadores/tipos-suportados",
             "agendadores": "/api/etl/agendadores/tipos-suportados",
-            "parsadores": "/api/etl/parsadores/tipos-suportados"
+            "parsadores": "/api/etl/parsadores/tipos-suportados",
+            "conectores": "/api/etl/conectores/estados-suportados"
         }
     }
 
