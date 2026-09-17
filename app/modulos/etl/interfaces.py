@@ -75,3 +75,29 @@ class NotificadorNota(ABC):
     def tipo_notificador(self) -> str:
         """Tipo: EMAIL, SMS, WHATSAPP, PUSH"""
         pass
+
+
+# ============ EXPORTADORES ============
+class ExportadorNota(ABC):
+    """Interface para exportadores de notas fiscais"""
+    
+    @abstractmethod
+    def exportar(self, dados: dict) -> dict:
+        """
+        Exportar dados em formato específico
+        
+        Retorna:
+        {
+            "exportado": bool,
+            "formato": str,
+            "tamanho": int,
+            "conteudo": bytes ou string
+        }
+        """
+        pass
+    
+    @property
+    @abstractmethod
+    def tipo_exportador(self) -> str:
+        """Tipo: PDF, XML, JSON, EXCEL"""
+        pass

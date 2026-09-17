@@ -82,5 +82,90 @@ class TestValidadores:
         print("✅ DATABASE validou com sucesso!")
 
 
+# ============ TESTES EXPORTADORES ============
+class TestExportadores:
+    """Testa ExportadorFactory"""
+    
+    def test_listar_exportadores(self):
+        """Testa GET /api/etl/exportadores/tipos-suportados"""
+        response = client.get("/api/etl/exportadores/tipos-suportados")
+        assert response.status_code == 200
+        data = response.json()
+        assert "exportadores" in data
+        assert "JSON" in data["exportadores"]
+        assert "XML" in data["exportadores"]
+        assert "PDF" in data["exportadores"]
+        assert "EXCEL" in data["exportadores"]
+        print(f"✅ Exportadores: {data['exportadores']}")
+    
+    def test_exportar_json(self):
+        """Testa exportação JSON"""
+        response = client.post(
+            "/api/etl/exportadores/exportar/json",
+            params={
+                "numero": "001",
+                "serie": "1",
+                "valor": 1000.0,
+                "cnpj": "12.345.678/0001-99"
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["exportado"] == True
+        assert data["formato"] == "JSON"
+        print("✅ JSON exportado com sucesso!")
+    
+    def test_exportar_xml(self):
+        """Testa exportação XML"""
+        response = client.post(
+            "/api/etl/exportadores/exportar/xml",
+            params={
+                "numero": "001",
+                "serie": "1",
+                "valor": 1000.0,
+                "cnpj": "12.345.678/0001-99"
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["exportado"] == True
+        assert data["formato"] == "XML"
+        print("✅ XML exportado com sucesso!")
+    
+    def test_exportar_pdf(self):
+        """Testa exportação PDF"""
+        response = client.post(
+            "/api/etl/exportadores/exportar/pdf",
+            params={
+                "numero": "001",
+                "serie": "1",
+                "valor": 1000.0,
+                "cnpj": "12.345.678/0001-99"
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["exportado"] == True
+        assert data["formato"] == "PDF"
+        print("✅ PDF exportado com sucesso!")
+    
+    def test_exportar_excel(self):
+        """Testa exportação EXCEL"""
+        response = client.post(
+            "/api/etl/exportadores/exportar/excel",
+            params={
+                "numero": "001",
+                "serie": "1",
+                "valor": 1000.0,
+                "cnpj": "12.345.678/0001-99"
+            }
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert data["exportado"] == True
+        assert data["formato"] == "EXCEL"
+        print("✅ EXCEL exportado com sucesso!")
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "-s"])
